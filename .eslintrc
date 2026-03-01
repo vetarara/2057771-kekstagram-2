@@ -12,9 +12,9 @@ globals:
   noUiSlider: readonly
   Pristine: readonly
 
-extends:
-  - htmlacademy/vanilla
-
 env:
   node: true
   jest: true
+
+extends:
+  - htmlacademy/vanilla
