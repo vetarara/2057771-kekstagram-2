@@ -7,14 +7,12 @@ parserOptions:
 env:
   es2022: true
   browser: true
+  node: true
+  jest: true
 
 globals:
   noUiSlider: readonly
   Pristine: readonly
-
-env:
-  node: true
-  jest: true
 
 extends:
   - htmlacademy/vanilla
