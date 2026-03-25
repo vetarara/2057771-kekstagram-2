@@ -1,5 +1,5 @@
 import {getRandomInteger, generateCommentId, generatePostId} from './utils.js';
-import {DESCRIPTIONS, NAMES, MESSAGES} from './data.js';
+import { DESCRIPTIONS, NAMES, MESSAGES } from './data.js';
 
 const MIN_LIKES = 15;
 const MAX_LIKES = 200;
