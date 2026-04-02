@@ -54,7 +54,8 @@ const createPost = () => {
 
   return {
     id: postId,
-    url: `photos/${postId}.jpg`,
+    // +1 добавила, т.к. иначе GET http://localhost:3001/photos/0.jpg 404 (Not Found)
+    url: `photos/${postId + 1}.jpg`,
     description: `${DESCRIPTIONS[indexDescriptionsArr]}`,
     likes: getRandomInteger(MIN_LIKES, MAX_LIKES),
     comments: Array.from({length: numComments}, createComment)
