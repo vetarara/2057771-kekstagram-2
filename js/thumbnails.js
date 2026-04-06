@@ -25,3 +25,5 @@ const createThumbnail = (post) => {
 };
 
 container.append(...posts.map(createThumbnail));
+
+export { posts };
