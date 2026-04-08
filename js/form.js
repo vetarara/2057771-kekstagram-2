@@ -1,7 +1,6 @@
-// ======================
-// ЭЛЕМЕНТЫ
-// ======================
+import {isEscapeKey} from './utils.js';
 
+// Dom-элементы
 const uploadInput = document.querySelector('.img-upload__input');
 const overlay = document.querySelector('.img-upload__overlay');
 const body = document.querySelector('body');
@@ -26,10 +25,7 @@ const effectLevelInput = document.querySelector('.effect-level__value');
 const hashtagsInput = document.querySelector('.text__hashtags');
 const commentInput = document.querySelector('.text__description');
 
-
-// ======================
-// КОНСТАНТЫ
-// ======================
+// Константы
 
 const SCALE_STEP = 25;
 const SCALE_MIN = 25;
@@ -80,11 +76,7 @@ const effects = {
   }
 };
 
-
-// ======================
-// ОТКРЫТИЕ / ЗАКРЫТИЕ
-// ======================
-
+// Открытие и закрытие формы
 const openForm = () => {
   overlay.classList.remove('hidden');
   body.classList.add('modal-open');
@@ -106,11 +98,15 @@ const closeForm = () => {
 };
 
 function onEscKeydown(evt) {
+  if (!isEscapeKey(evt)) {
+    return;
+  }
+
   const isInputFocused =
     document.activeElement === hashtagsInput ||
     document.activeElement === commentInput;
 
-  if (evt.key === 'Escape' && !isInputFocused) {
+  if (!isInputFocused) {
     evt.preventDefault();
     closeForm();
   }
@@ -119,11 +115,7 @@ function onEscKeydown(evt) {
 uploadInput.addEventListener('change', openForm);
 closeButton.addEventListener('click', closeForm);
 
-
-// ======================
-// МАСШТАБ
-// ======================
-
+// Изменение масштаба
 let currentScale = 100;
 
 const updateScale = () => {
@@ -150,88 +142,89 @@ scaleBigger.addEventListener('click', () => {
   }
 });
 
+// Эффекты + слайдер
 
-// ======================
-// ЭФФЕКТЫ + СЛАЙДЕР
-// ======================
-
-const sliderElement = document.querySelector('.effect-level');
-const valueElement = document.querySelector('.effect-level__value');
-const effectElement = document.querySelector('.level-form__special');
-
-valueElement.value = 80;
+const sliderElement = document.querySelector('.effect-level__slider');
+const effectLevel = document.querySelector('.img-upload__effect-level');
 
 noUiSlider.create(sliderElement, {
   range: {
     min: 0,
-    max: 100,
+    max: 100
   },
-  start: 80,
+  start: 100,
   step: 1,
-  connect: 'lower',
+  connect: 'lower'
 });
 
+// обновление значения
 sliderElement.noUiSlider.on('update', () => {
-  valueElement.value = sliderElement.noUiSlider.get();
+  effectLevelInput.value = sliderElement.noUiSlider.get();
 });
 
+// применение эффекта
+const applyEffect = (effectName, value) => {
+  const effect = effects[effectName];
 
-// let currentEffect = 'none';
+  if (effectName === 'none') {
+    previewImage.style.filter = '';
+    return;
+  }
 
-// // создаём простой range вместо noUiSlider
-// const slider = document.createElement('input');
-// slider.type = 'range';
-// slider.classList.add('effect-slider');
-// effectLevelContainer.appendChild(slider);
+  previewImage.style.filter =
+    `${effect.style}(${value}${effect.unit})`;
+};
 
-// const updateEffect = () => {
-//   const effect = effects[currentEffect];
+// движение слайдера
+sliderElement.noUiSlider.on('update', () => {
+  const value = sliderElement.noUiSlider.get();
+  const currentEffect =
+    document.querySelector('.effects__radio:checked').value;
 
-//   if (currentEffect === 'none') {
-//     previewImage.style.filter = 'none';
-//     effectLevelContainer.classList.add('hidden');
-//     return;
-//   }
+  effectLevelInput.value = value;
+  applyEffect(currentEffect, value);
+});
 
-//   effectLevelContainer.classList.remove('hidden');
+// переключение эффектов
+effectsList.addEventListener('change', (evt) => {
+  if (!evt.target.classList.contains('effects__radio')) {
+    return;
+  }
 
-//   const value = slider.value;
-//   previewImage.style.filter = `${effect.style}(${value}${effect.unit})`;
+  const effectName = evt.target.value;
+  const effect = effects[effectName];
 
-//   effectLevelInput.value = value;
-// };
+  if (effectName === 'none') {
+    effectLevel.classList.add('hidden');
+    previewImage.style.filter = '';
+    return;
+  }
 
-// function resetEffects () {
-//   currentEffect = 'none';
-//   slider.value = 0;
-//   previewImage.style.filter = 'none';
-//   effectLevelContainer.classList.add('hidden');
-// }
+  effectLevel.classList.remove('hidden');
 
-// effectsList.addEventListener('change', (evt) => {
-//   if (!evt.target.classList.contains('effects__radio')) {
-//     return;
-//   }
+  sliderElement.noUiSlider.updateOptions({
+    range: {
+      min: effect.min,
+      max: effect.max
+    },
+    step: effect.step,
+    start: effect.max
+  });
 
-//   currentEffect = evt.target.value;
-//   const effect = effects[currentEffect];
+  sliderElement.noUiSlider.set(effect.max);
+});
 
-//   slider.min = effect.min;
-//   slider.max = effect.max;
-//   slider.step = effect.step;
-//   slider.value = effect.max;
+function resetEffects() {
+  previewImage.style.filter = '';
+  effectLevelContainer.classList.add('hidden');
 
-//   updateEffect();
-// });
+  const noneEffect = document.querySelector('#effect-none');
+  noneEffect.checked = true;
 
-// slider.addEventListener('input', updateEffect);
+  sliderElement.noUiSlider.set(100);
+}
 
-
-// ======================
-// ПОДГОТОВКА ФОРМЫ
-// ======================
-
-// скрываем слайдер по умолчанию
-// effectLevelContainer.classList.add('hidden');
-// resetScale();
-// resetEffects();
+// скрытие слайдера по умолчанию
+effectLevelContainer.classList.add('hidden');
+resetScale();
+resetEffects();
