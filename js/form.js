@@ -1,6 +1,6 @@
 import {isEscapeKey} from './utils.js';
 
-// Dom-элементы
+// DOM-элементы
 const uploadInput = document.querySelector('.img-upload__input');
 const overlay = document.querySelector('.img-upload__overlay');
 const body = document.querySelector('body');
@@ -25,12 +25,96 @@ const effectLevelInput = document.querySelector('.effect-level__value');
 const hashtagsInput = document.querySelector('.text__hashtags');
 const commentInput = document.querySelector('.text__description');
 
-// Константы
 
+// Константы
 const SCALE_STEP = 25;
 const SCALE_MIN = 25;
 const SCALE_MAX = 100;
 
+const MAX_HASHTAGS = 5;
+const MAX_COMMENT_LENGTH = 140;
+
+const HASHTAG_REGEX = /^#[a-zа-яё0-9]{1,19}$/i;
+
+// Подключение Pristine
+
+const pristine = new Pristine(form, {
+  classTo: 'img-upload__field-wrapper',
+  errorClass: 'img-upload__field-wrapper--error',
+  successClass: 'img-upload__field-wrapper--success',
+  errorTextParent: 'img-upload__field-wrapper',
+  errorTextTag: 'div',
+  errorTextClass: 'pristine-error'
+});
+
+// Проверка хэштегов
+// превращаеm строку тегов в массив
+const getHashtags = () =>
+  hashtagsInput.value
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((tag) => tag.length > 0);
+
+// проверка формата
+const validateHashtagFormat = () => {
+  const hashtags = getHashtags();
+  return hashtags.every((tag) => HASHTAG_REGEX.test(tag));
+};
+
+// проверка количества тегов - не больше 5
+const validateHashtagCount = () => {
+  const hashtags = getHashtags();
+  return hashtags.length <= MAX_HASHTAGS;
+};
+
+// проверка уникальности - не должны повторяться
+const validateHashtagUnique = () => {
+  const hashtags = getHashtags();
+  const unique = new Set(hashtags);
+  return unique.size === hashtags.length;
+};
+
+// проверка комментария
+const validateComment = () =>
+  commentInput.value.length <= MAX_COMMENT_LENGTH;
+
+
+//подключение валидаторов
+pristine.addValidator(
+  hashtagsInput,
+  validateHashtagFormat,
+  'Неправильный хэштег'
+);
+
+pristine.addValidator(
+  hashtagsInput,
+  validateHashtagCount,
+  'Нельзя указать больше пяти хэштегов'
+);
+
+pristine.addValidator(
+  hashtagsInput,
+  validateHashtagUnique,
+  'Хэштеги не должны повторяться'
+);
+
+pristine.addValidator(
+  commentInput,
+  validateComment,
+  'Длина комментария не больше 140 символов'
+);
+
+// отправка формы
+form.addEventListener('submit', (evt) => {
+  const isValid = pristine.validate();
+
+  if (!isValid) {
+    evt.preventDefault();
+  }
+});
+
+// эффекты
 const effects = {
   none: {
     style: 'none',
@@ -76,7 +160,7 @@ const effects = {
   }
 };
 
-// Открытие и закрытие формы
+// открытие / закрытие формы
 const openForm = () => {
   overlay.classList.remove('hidden');
   body.classList.add('modal-open');
@@ -91,6 +175,8 @@ const closeForm = () => {
   document.removeEventListener('keydown', onEscKeydown);
 
   form.reset();
+  pristine.reset();
+
   resetScale();
   resetEffects();
 
@@ -115,7 +201,8 @@ function onEscKeydown(evt) {
 uploadInput.addEventListener('change', openForm);
 closeButton.addEventListener('click', closeForm);
 
-// Изменение масштаба
+
+// масштаб фото
 let currentScale = 100;
 
 const updateScale = () => {
@@ -142,10 +229,8 @@ scaleBigger.addEventListener('click', () => {
   }
 });
 
-// Эффекты + слайдер
-
+// эффекты + слайдер
 const sliderElement = document.querySelector('.effect-level__slider');
-const effectLevel = document.querySelector('.img-upload__effect-level');
 
 noUiSlider.create(sliderElement, {
   range: {
@@ -195,12 +280,12 @@ effectsList.addEventListener('change', (evt) => {
   const effect = effects[effectName];
 
   if (effectName === 'none') {
-    effectLevel.classList.add('hidden');
+    effectLevelContainer.classList.add('hidden');
     previewImage.style.filter = '';
     return;
   }
 
-  effectLevel.classList.remove('hidden');
+  effectLevelContainer.classList.remove('hidden');
 
   sliderElement.noUiSlider.updateOptions({
     range: {
@@ -214,6 +299,7 @@ effectsList.addEventListener('change', (evt) => {
   sliderElement.noUiSlider.set(effect.max);
 });
 
+// сброс эффектов
 function resetEffects() {
   previewImage.style.filter = '';
   effectLevelContainer.classList.add('hidden');
@@ -224,7 +310,8 @@ function resetEffects() {
   sliderElement.noUiSlider.set(100);
 }
 
-// скрытие слайдера по умолчанию
+// стартовая инициализация
 effectLevelContainer.classList.add('hidden');
+
 resetScale();
 resetEffects();
