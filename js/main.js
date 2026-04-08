@@ -2,5 +2,6 @@
 import {createPosts} from './generators.js';
 import './thumbnails.js';
 import './post-viewer.js';
+import './form.js';
 
 createPosts();
