@@ -1,20 +1,15 @@
-import { createPosts } from './generators.js';
-import { findTemplate, } from './dom.js';
+import { findTemplate } from './dom.js';
 
-/** @type {HTMLAnchorElement} */
-
-const posts = createPosts();
-const template = findTemplate('picture');
 const container = document.querySelector('.pictures');
+const template = findTemplate('picture');
 
 const createThumbnail = (post) => {
-  /** @type {HTMLAnchorElement} */
   const thumbnail = template.cloneNode(true);
+
   thumbnail.href = post.url;
   thumbnail.dataset.id = post.id;
 
   const image = thumbnail.querySelector('.picture__img');
-
   image.src = post.url;
   image.alt = post.description;
 
@@ -24,6 +19,14 @@ const createThumbnail = (post) => {
   return thumbnail;
 };
 
-container.append(...posts.map(createThumbnail));
+const renderThumbnails = (posts) => {
+  const fragment = document.createDocumentFragment();
 
-export { posts };
+  posts.forEach((post) => {
+    fragment.append(createThumbnail(post));
+  });
+
+  container.append(fragment);
+};
+
+export { renderThumbnails };

@@ -15,25 +15,14 @@ const ErrorText = {
   [Method.POST]: 'Не удалось отправить данные формы',
 };
 
-// На промисах - то, что написано в тренажёрах в теории
-// в реальной работе чаще используют синтаксис async/await
-// const load = (route, method = Method.GET, body = null) =>
-//   fetch(`${BASE_URL}${route}`, { method, body })
-// .then((response) =>
-// response.ok ? response.json() : Promise.reject(ErrorText[method]));
-
-// const getData = () => load(Route.GET_DATA);
-
-// const sendData = (body) => load(Route.SEND_DATA, Method.POST, body);
-
-// С использованием async/await
+// С использованием async/await - ЗАГРУЗКА ДАННЫХ
 const load = async (route, method = Method.GET, body = null) => {
   const response = await fetch(`${BASE_URL}${route}`, { method, body });
-  return response.ok ? await response.json() : Promise.reject(ErrorText[method]);
+  return response.ok ? await response.json() : Promise.reject({ message: ErrorText[method], status: response.status });
+  // в reject добавлены объекты с полями message и status, чтобы получать больше информации
 };
 
 const getData = async () => await load(Route.GET_DATA);
-
 const sendData = async (body) => await load(Route.SEND_DATA, Method.POST, body);
 
 export {getData, sendData};

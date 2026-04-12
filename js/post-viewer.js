@@ -1,5 +1,5 @@
 import {isEscapeKey, isEnterKey} from './utils.js';
-import { posts } from './thumbnails.js';
+let posts = [];
 
 // элементы DOM
 const userModalElement = document.querySelector('.big-picture');
@@ -173,4 +173,11 @@ function onUserModalKeydown(evt) {
   }
 }
 
+// функция для инициализации
+const setPosts = (data) => {
+  posts = data;
+};
+
 userModalCloseElement.addEventListener('keydown', onUserModalKeydown);
+
+export { setPosts };

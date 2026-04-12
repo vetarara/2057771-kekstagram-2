@@ -1,4 +1,6 @@
 import {isEscapeKey} from './utils.js';
+import { sendData } from './api.js';
+import { appendNotification } from './notification-module.js';
 
 // DOM-элементы
 const uploadInput = document.querySelector('.img-upload__input');
@@ -104,15 +106,6 @@ pristine.addValidator(
   validateComment,
   'Длина комментария не больше 140 символов'
 );
-
-// отправка формы
-form.addEventListener('submit', (evt) => {
-  const isValid = pristine.validate();
-
-  if (!isValid) {
-    evt.preventDefault();
-  }
-});
 
 // эффекты
 const effects = {
@@ -323,3 +316,60 @@ effectLevelContainer.classList.add('hidden');
 
 resetScale();
 resetEffects();
+
+// =======
+
+// ДОБАВЛЯЕТ ИНТЕРАКТИВНОСТЬ НА КНОПКУ
+const formSubmitButton = form.querySelector('.img-upload__submit');
+
+const SubmitButtonText = {
+  IDLE: 'Сохранить', //начальное состояние
+  SENDING: 'Сохраняю...',
+};
+
+// метод, который блокирует кнопку
+const disabledButton = (text) => {
+  formSubmitButton.disabled = true;
+  formSubmitButton.textContent = text;
+};
+
+// метод, который разблокировывает кнопку
+const enableButton = (text) => {
+  formSubmitButton.disabled = false;
+  formSubmitButton.textContent = text;
+};
+
+// ДОБАВЛЯЕТ ОТПРАВКУ ФОРМЫ
+const templateSuccess = document.querySelector('#success').content.firstElementChild;
+const templateError = document.querySelector('#error').content.firstElementChild;
+
+const sendFormData = async (formElement) => {
+  const isValid = pristine.validate();
+
+  if (!isValid) {
+    return;
+  }
+
+  disabledButton(SubmitButtonText.SENDING);
+
+  try {
+    await sendData(new FormData(formElement));
+
+    closeForm();
+
+    appendNotification(templateSuccess);
+
+  } catch (error) {
+    appendNotification(templateError);
+  } finally {
+    enableButton(SubmitButtonText.IDLE);
+  }
+};
+
+const formSubmitHandler = (evt) => {
+  evt.preventDefault();
+  sendFormData(evt.target);
+};
+
+form.addEventListener('submit',
+  formSubmitHandler);

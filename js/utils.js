@@ -1,3 +1,5 @@
+import { findTemplate } from './dom.js';
+
 /**
  * Возвращает случайное целое число в заданном диапазоне (включительно).
  * @param {number} min - Минимальное значение
@@ -38,4 +40,44 @@ const isEscapeKey = (evt) => evt.key === 'Escape';
 
 const isEnterKey = (evt) => evt.key === 'Enter';
 
-export {getRandomInteger, generateCommentId, generatePostId, isEscapeKey, isEnterKey};
+// =======
+// ошибка загрузки миниатюр  - ОБРАБОТКА ВОЗМОЖНЫХ ОШИБОК ПРИ ЗАГРУЗКЕ
+const REMOVE_MESSAGE_TIMEOUT = 5000;
+
+const errorLoadDataTemplate = document.querySelector('#data-error').content;
+const body = document.body;
+
+const showErrorMessage = (message) => {
+  const errorElement = errorLoadDataTemplate.cloneNode(true);
+
+  if (message) {
+    errorElement.querySelector('.data-error__title').textContent = message;
+  }
+
+  body.append(errorElement);
+
+  setTimeout(() => {
+    errorElement.remove();
+  }, REMOVE_MESSAGE_TIMEOUT);
+};
+
+const showDataError = () => {
+  const template = findTemplate('data-error');
+  const node = template.cloneNode(true);
+
+  document.body.append(node);
+
+  setTimeout(() => {
+    node.remove();
+  }, 5000);
+};
+
+export {
+  getRandomInteger,
+  generateCommentId,
+  generatePostId,
+  isEscapeKey,
+  isEnterKey,
+  showErrorMessage,
+  showDataError
+};
