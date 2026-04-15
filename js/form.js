@@ -10,6 +10,7 @@ const closeButton = document.querySelector('.img-upload__cancel');
 const form = document.querySelector('.img-upload__form');
 
 const previewImage = document.querySelector('.img-upload__preview img');
+const effectPreviews = document.querySelectorAll('.effects__preview');
 
 // масштаб
 const scaleValue = document.querySelector('.scale__control--value');
@@ -206,7 +207,13 @@ uploadInput.addEventListener('change', () => {
   if (!isValid) {
     return;
   }
-  previewImage.src = URL.createObjectURL(file);
+  const imageUrl = URL.createObjectURL(file);
+
+  previewImage.src = imageUrl;
+
+  effectPreviews.forEach((preview) => {
+    preview.style.backgroundImage = `url(${imageUrl})`;
+  });
 });
 
 closeButton.addEventListener('click', closeForm);
@@ -262,7 +269,7 @@ sliderElement.noUiSlider.on('update', () => {
   const currentEffect =
     document.querySelector('.effects__radio:checked').value;
 
-  effectLevelInput.value = value;
+  effectLevelInput.value = Number(value);
   throttledApplyEffect(currentEffect, value);
 });
 
