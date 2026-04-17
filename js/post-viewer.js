@@ -25,7 +25,7 @@ const totalCountElement = userModalElement.querySelector('.social__comment-total
 const onDocumentKeydown = (evt) => {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
-    closeUserModal();
+    onUserModalClose();
   }
 };
 
@@ -53,7 +53,7 @@ const createCommentElement = ({ avatar, name, message }) => {
  * Отрисовывает следующую часть комментариев
  * @returns {void}
  */
-const renderComments = () => {
+const onCommentsLoaderClick = () => {
   const nextComments = currentComments.slice(
     shownCommentsCount,
     shownCommentsCount + COMMENTS_STEP
@@ -97,7 +97,7 @@ const fillModal = (photo) => {
   commentsLoader.classList.remove('hidden');
 
   // первый рендер (5 комментариев)
-  renderComments();
+  onCommentsLoaderClick();
 };
 
 /**
@@ -116,7 +116,7 @@ function openUserModal (photo) {
  * Закрывает модальное окно
  * @returns {void}
  */
-function closeUserModal () {
+function onUserModalClose () {
   userModalElement.classList.add('hidden');
   document.body.classList.remove('modal-open');
   document.removeEventListener('keydown', onDocumentKeydown);
@@ -157,10 +157,10 @@ userModalOpenElement.addEventListener('keydown', (evt) => {
 });
 
 // кнопка Загрузить ещё
-commentsLoader.addEventListener('click', renderComments);
+commentsLoader.addEventListener('click', onCommentsLoaderClick);
 
 // закрытие
-userModalCloseElement.addEventListener('click', closeUserModal);
+userModalCloseElement.addEventListener('click', onUserModalClose);
 
 /**
  * Обработчик нажатия Enter на кнопке закрытия модального окна
@@ -169,7 +169,7 @@ userModalCloseElement.addEventListener('click', closeUserModal);
 function onUserModalKeydown(evt) {
   if (isEnterKey(evt)) {
     evt.preventDefault();
-    closeUserModal();
+    onUserModalClose();
   }
 }
 
