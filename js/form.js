@@ -2,6 +2,16 @@ import { isEscapeKey, debounce, throttle } from './utils.js';
 import { sendData } from './api.js';
 import { appendNotification } from './notification-module.js';
 
+// Константы
+const SCALE_STEP = 25;
+const SCALE_MIN = 25;
+const SCALE_MAX = 100;
+
+const MAX_HASHTAGS = 5;
+const MAX_COMMENT_LENGTH = 140;
+
+const HASHTAG_REGEX = /^#[a-zа-яё0-9]{1,19}$/i;
+
 // DOM-элементы
 const uploadInput = document.querySelector('.img-upload__input');
 const overlay = document.querySelector('.img-upload__overlay');
@@ -27,17 +37,6 @@ const effectLevelInput = document.querySelector('.effect-level__value');
 // текст
 const hashtagsInput = document.querySelector('.text__hashtags');
 const commentInput = document.querySelector('.text__description');
-
-
-// Константы
-const SCALE_STEP = 25;
-const SCALE_MIN = 25;
-const SCALE_MAX = 100;
-
-const MAX_HASHTAGS = 5;
-const MAX_COMMENT_LENGTH = 140;
-
-const HASHTAG_REGEX = /^#[a-zа-яё0-9]{1,19}$/i;
 
 // Подключение Pristine
 

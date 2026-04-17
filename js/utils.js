@@ -1,5 +1,7 @@
 import { findTemplate } from './dom.js';
 
+const REMOVE_MESSAGE_TIMEOUT = 5000;
+
 /**
  * Возвращает случайное целое число в заданном диапазоне (включительно).
  * @param {number} min - Минимальное значение
@@ -42,7 +44,6 @@ const isEnterKey = (evt) => evt.key === 'Enter';
 
 // =======
 // ошибка загрузки миниатюр  - ОБРАБОТКА ВОЗМОЖНЫХ ОШИБОК ПРИ ЗАГРУЗКЕ
-const REMOVE_MESSAGE_TIMEOUT = 5000;
 
 const errorLoadDataTemplate = document.querySelector('#data-error').content;
 const body = document.body;
