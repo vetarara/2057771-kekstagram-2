@@ -62,9 +62,3 @@ const createPost = () => {
   };
 };
 
-/**
- * Массив сгенерированных постов
- * @type {Object[]}
- */
-const createPosts = () => Array.from({length: POSTS_COUNT}, createPost);
-export {createPosts};
